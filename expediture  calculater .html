@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EXPENDIT</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>EXPENDIT - Budget Tracker</h1>
+        
+        <input type="text" class="Description" placeholder="Enter description" id="Reason" name="description" value=""><br>
+        <input type="number" class="Price" placeholder="Enter amount" id="Bill"><br>
+
+        <button class="btn" onclick="addTransaction('Debit')">Debit</button>
+        <button class="btn" onclick="addTransaction('Credit')">Credit</button>
+        <button class="btn" onclick="clearTransactions()">Clear All</button>
+
+        <h3>Current Balance</h3>
+        <input type="number" class="Balance" id="Balance" readonly>
+
+    </div>
+
+    <div class="transactions">
+        <h2>Transactions</h2>
+        <ul id="list"></ul>
+    </div>
+
+    <script>
+        let Description = document.getElementById("Reason");
+        let Price = document.getElementById("Bill");
+        let list = document.getElementById("list");
+        let BalanceField = document.getElementById("Balance");
+
+        let transactions = [];
+
+        // Add transaction with type Debit or Credit
+        function addTransaction(type) {
+            const description = Description.value.trim();
+            const price = parseFloat(Price.value);
+
+            if (description && !isNaN(price)) {
+                const transaction = {
+                    description: description,
+                    type: type,
+                    price: price,
+                    date: new Date().toLocaleString()
+                };
+
+                transactions.push(transaction);
+                displayTransaction(transaction);
+                updateBalance();
+
+                // Clear input fields
+                Description.value = '';
+                Price.value = '';
+            } else {
+                alert("Please enter a valid description and amount.");
+            }
+        }
+
+        // Display a single transaction in the list
+        function displayTransaction(transaction) {
+            const listItem = document.createElement("li");
+            listItem.textContent = `${transaction.date} - ${transaction.type}: ${transaction.description} - $${transaction.price}`;
+            list.appendChild(listItem);
+        }
+
+        // Update the displayed balance based on transactions
+        function updateBalance() {
+            const balance = transactions.reduce((acc, current) => {
+                return current.type === "Debit" ? acc - current.price : acc + current.price;
+            }, 0);
+            BalanceField.value = balance.toFixed(2);
+        }
+
+        // Clear all transactions and reset balance
+        function clearTransactions() {
+            transactions = [];
+            list.innerHTML = '';
+            BalanceField.value = '0.00';
+        }
+    </script>
+</body>
+</html>
